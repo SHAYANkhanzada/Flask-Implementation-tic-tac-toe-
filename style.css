@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+    margin: 20px 0;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+}
+
+td {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+td:hover {
+    background-color: #f0f0f0;
+}
+
+td.taken {
+    cursor: not-allowed;
+    background-color: #ddd;
+}
+
+#message {
+    font-size: 20px;
+    color: #555;
+    margin-top: 20px;
+}

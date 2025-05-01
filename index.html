@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        td {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        td.taken {
+            cursor: not-allowed;
+            background-color: #ddd;
+        }
+        #message {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <table>
+        <tbody>
+            <tr>
+                <td id="cell-0-0" onclick="makeMove(0, 0)"></td>
+                <td id="cell-0-1" onclick="makeMove(0, 1)"></td>
+                <td id="cell-0-2" onclick="makeMove(0, 2)"></td>
+            </tr>
+            <tr>
+                <td id="cell-1-0" onclick="makeMove(1, 0)"></td>
+                <td id="cell-1-1" onclick="makeMove(1, 1)"></td>
+                <td id="cell-1-2" onclick="makeMove(1, 2)"></td>
+            </tr>
+            <tr>
+                <td id="cell-2-0" onclick="makeMove(2, 0)"></td>
+                <td id="cell-2-1" onclick="makeMove(2, 1)"></td>
+                <td id="cell-2-2" onclick="makeMove(2, 2)"></td>
+            </tr>
+        </tbody>
+    </table>
+    <p id="message">Player X's turn</p>
+    <script>
+        const socket = io();
+
+        let player = null;
+
+        function makeMove(row, col) {
+            if (player === null) {
+                alert("Wait for your turn or assign yourself as X or O.");
+                return;
+            }
+            socket.emit('make_move', { row, col, player });
+        }
+
+        socket.on('game_update', (data) => {
+            const { board, winner, draw, current_player } = data;
+            // Update board
+            board.forEach((row, i) => {
+                row.forEach((cell, j) => {
+                    const cellElement = document.getElementById(`cell-${i}-${j}`);
+                    cellElement.textContent = cell;
+                    if (cell) {
+                        cellElement.classList.add('taken');
+                    }
+                });
+            });
+            if (winner) {
+                document.getElementById('message').textContent = `${winner} wins!`;
+            } else if (draw) {
+                document.getElementById('message').textContent = "It's a draw!";
+            } else {
+                document.getElementById('message').textContent = `Player ${current_player}'s turn`;
+            }
+        });
+
+        socket.on('invalid_move', (data) => {
+            alert(data.message);
+        });
+
+        // Assign player role
+        window.onload = () => {
+            const assignPlayer = prompt("Enter your player type (X or O):");
+            if (assignPlayer === 'X' || assignPlayer === 'O') {
+                player = assignPlayer;
+                document.getElementById('message').textContent = `You are Player ${player}`;
+            } else {
+                alert("Invalid player type!");
+            }
+        };
+    </script>
+</body>
+</html>
